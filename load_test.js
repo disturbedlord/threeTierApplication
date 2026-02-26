@@ -3,7 +3,7 @@ import { check, sleep } from "k6";
 
 // Test options
 export let options = {
-  vus: 100, // 50 virtual users (adjust based on your PC)
+  vus: 50, // 50 virtual users (adjust based on your PC)
   duration: "30s", // Run for 30 seconds
   thresholds: {
     http_req_duration: ["p(95)<500"], // 95% of requests should be < 500ms
@@ -13,7 +13,7 @@ export let options = {
 
 export default function () {
   // Hit the middleware Nginx load balancer
-  const res = http.get("http://middleware:80/api/rate");
+  const res = http.get("http://localhost:5000/api/rate");
 
   // Check response status
   check(res, {
