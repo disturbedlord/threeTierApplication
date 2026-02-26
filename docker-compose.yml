@@ -1,5 +1,9 @@
 version: "3.9"
 
+networks:
+  appnet:
+    name: threetierapp_network  # lowercase
+    
 services:
   # Frontend React App
   frontend:

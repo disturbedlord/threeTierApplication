@@ -31,7 +31,7 @@ jobs:
           sudo curl -L "https://github.com/docker/compose/releases/download/v2.25.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
           docker-compose version
-          
+
       - name: Build and start full stack
         run: |
           docker-compose up -d --build
@@ -39,9 +39,9 @@ jobs:
 
       - name: Run k6 load test
         run: |
-          docker run --rm -i --network $(docker network ls --filter name=three-tier-app_default -q) \
-            -v ${{ github.workspace }}/load_test.js:/load_test.js \
-            grafana/k6 run /load_test.js
+          docker run --rm -i --network threetierapp_network \
+          -v ${{ github.workspace }}/load_test.js:/load_test.js \
+          grafana/k6 run /load_test.js
 
       - name: Stop all containers
         run: docker-compose down -v
