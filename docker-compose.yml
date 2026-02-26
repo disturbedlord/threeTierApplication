@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  # Frontend React App
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "3001:80"  # Access React at http://localhost:3000
+    depends_on:
+      - middleware
+
+  # Middleware / Load Balancer
+  middleware:
+    build: ./middleware
+    container_name: middleware
+    ports:
+      - "5000:80"  # Internal API gateway (optional direct testing)
+    depends_on:
+      - backend1
+      - backend2
+
+  # Backend Instance 1
+  backend1:
+    build: ./backend
+    container_name: backend1
+    environment:
+      NODE_ENV: production
+    expose:
+      - "4000"
+
+  # Backend Instance 2
+  backend2:
+    build: ./backend
+    container_name: backend2
+    environment:
+      NODE_ENV: production
+    expose:
+      - "4000"

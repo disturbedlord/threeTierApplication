@@ -1,0 +1,41 @@
+name: Three-Tier App CI
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      docker:
+        # Ensure Docker is available
+        image: docker:24-dind
+        options: --privileged
+        ports:
+          - 3001:80
+          - 5000:80
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Compose
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and start full stack
+        run: |
+          docker-compose up -d --build
+          sleep 10  # give backend and middleware time to start
+
+      - name: Run k6 load test
+        run: |
+          docker run --rm -i --network $(docker network ls --filter name=three-tier-app_default -q) \
+            -v ${{ github.workspace }}/load_test.js:/load_test.js \
+            grafana/k6 run /load_test.js
+
+      - name: Stop all containers
+        run: docker-compose down -v
